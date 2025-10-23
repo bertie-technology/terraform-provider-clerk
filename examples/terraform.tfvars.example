@@ -1,0 +1,25 @@
+# Copy this file to terraform.tfvars and fill in your values
+# cp terraform.tfvars.example terraform.tfvars
+
+# Required: Your Clerk API Key
+clerk_api_key = "sk_test_your_actual_api_key_here"
+
+# Required: Organization name
+organization_name = "My Test Organization"
+
+# Optional: Customize the organization settings
+# Uncomment and modify as needed
+
+# organization_slug = "my-test-org"
+# max_allowed_memberships = 100
+
+# public_metadata = {
+#   environment = "development"
+#   region      = "us-west-2"
+#   team        = "engineering"
+# }
+
+# private_metadata = {
+#   billing_id = "cus_example123"
+#   internal_id = "org_internal_456"
+# }
