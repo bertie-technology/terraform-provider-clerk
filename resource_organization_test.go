@@ -4,20 +4,25 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccOrganizationResource(t *testing.T) {
+	rString := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	slug1 := fmt.Sprintf("test-org-%s", rString)
+	slug2 := fmt.Sprintf("test-org-updated-%s", rString)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccOrganizationResourceConfig("Test Org", "test-org"),
+				Config: testAccOrganizationResourceConfig("Test Org", slug1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("clerk_organization.test", "name", "Test Org"),
-					resource.TestCheckResourceAttr("clerk_organization.test", "slug", "test-org"),
+					resource.TestCheckResourceAttr("clerk_organization.test", "slug", slug1),
 					resource.TestCheckResourceAttrSet("clerk_organization.test", "id"),
 				),
 			},
@@ -29,10 +34,10 @@ func TestAccOrganizationResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccOrganizationResourceConfig("Test Org Updated", "test-org-updated"),
+				Config: testAccOrganizationResourceConfig("Test Org Updated", slug2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("clerk_organization.test", "name", "Test Org Updated"),
-					resource.TestCheckResourceAttr("clerk_organization.test", "slug", "test-org-updated"),
+					resource.TestCheckResourceAttr("clerk_organization.test", "slug", slug2),
 				),
 			},
 			// Delete testing automatically occurs in TestCase
@@ -41,13 +46,16 @@ func TestAccOrganizationResource(t *testing.T) {
 }
 
 func TestAccOrganizationResource_withMetadata(t *testing.T) {
+	rString := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	slug := fmt.Sprintf("metadata-org-%s", rString)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with metadata
 			{
-				Config: testAccOrganizationResourceConfigWithMetadata("Metadata Org", "metadata-org"),
+				Config: testAccOrganizationResourceConfigWithMetadata("Metadata Org", slug),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("clerk_organization.test", "name", "Metadata Org"),
 					resource.TestCheckResourceAttrSet("clerk_organization.test", "public_metadata"),
@@ -59,15 +67,18 @@ func TestAccOrganizationResource_withMetadata(t *testing.T) {
 }
 
 func TestAccOrganizationResource_minimal(t *testing.T) {
+	rString := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := fmt.Sprintf("Minimal Org %s", rString)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with only required fields
 			{
-				Config: testAccOrganizationResourceConfigMinimal("Minimal Org"),
+				Config: testAccOrganizationResourceConfigMinimal(name),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("clerk_organization.test", "name", "Minimal Org"),
+					resource.TestCheckResourceAttr("clerk_organization.test", "name", name),
 					resource.TestCheckResourceAttrSet("clerk_organization.test", "id"),
 					resource.TestCheckResourceAttrSet("clerk_organization.test", "slug"), // Should be auto-generated
 				),
@@ -77,13 +88,16 @@ func TestAccOrganizationResource_minimal(t *testing.T) {
 }
 
 func TestAccOrganizationResource_withMaxMemberships(t *testing.T) {
+	rString := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	slug := fmt.Sprintf("max-org-%s", rString)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with max_allowed_memberships
 			{
-				Config: testAccOrganizationResourceConfigWithMax("Max Org", "max-org", 50),
+				Config: testAccOrganizationResourceConfigWithMax("Max Org", slug, 50),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("clerk_organization.test", "name", "Max Org"),
 					resource.TestCheckResourceAttr("clerk_organization.test", "max_allowed_memberships", "50"),
@@ -91,7 +105,7 @@ func TestAccOrganizationResource_withMaxMemberships(t *testing.T) {
 			},
 			// Update max_allowed_memberships
 			{
-				Config: testAccOrganizationResourceConfigWithMax("Max Org", "max-org", 100),
+				Config: testAccOrganizationResourceConfigWithMax("Max Org", slug, 100),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("clerk_organization.test", "max_allowed_memberships", "100"),
 				),
