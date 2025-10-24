@@ -1,4 +1,4 @@
-.PHONY: build install test testacc clean fmt docs
+.PHONY: build install test testacc clean fmt docs setup-hooks lint
 
 # Build the provider
 build:
@@ -9,6 +9,10 @@ build:
 install:
 	go mod download
 	go mod tidy
+
+# Setup git hooks for semantic commits
+setup-hooks:
+	@bash scripts/setup-git-hooks.sh
 
 # Run unit tests
 test:
@@ -21,6 +25,10 @@ testacc:
 # Format code
 fmt:
 	go fmt ./...
+
+# Run linter
+lint:
+	golangci-lint run
 
 # Clean build artifacts
 clean:

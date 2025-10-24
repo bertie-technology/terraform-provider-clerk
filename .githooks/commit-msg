@@ -1,0 +1,40 @@
+#!/bin/sh
+# Git commit-msg hook to validate commit messages against conventional commits
+
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# Regex for conventional commit format
+conventional_commit_regex='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?(!)?: .{1,}$'
+
+# Check if commit message matches conventional commit format
+if ! echo "$commit_msg" | head -n 1 | grep -Eq "$conventional_commit_regex"; then
+    echo "❌ ERROR: Commit message does not follow Conventional Commits format!"
+    echo ""
+    echo "Expected format: <type>[optional scope]: <description>"
+    echo ""
+    echo "Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+    echo ""
+    echo "Examples:"
+    echo "  feat: add new organization field"
+    echo "  fix: correct import logic"
+    echo "  feat(api)!: breaking API change"
+    echo ""
+    echo "Your commit message:"
+    echo "$commit_msg"
+    echo ""
+    exit 1
+fi
+
+# Check commit message length (first line should be <= 100 chars)
+first_line=$(echo "$commit_msg" | head -n 1)
+if [ ${#first_line} -gt 100 ]; then
+    echo "❌ ERROR: Commit message header is too long (${#first_line} > 100 characters)"
+    echo ""
+    echo "Please keep the first line under 100 characters."
+    echo ""
+    exit 1
+fi
+
+echo "✅ Commit message follows Conventional Commits format"
+exit 0
