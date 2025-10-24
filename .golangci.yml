@@ -1,0 +1,21 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - gofmt
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+linters-settings:
+  staticcheck:
+    go: "1.25"
+
+issues:
+  exclude-rules:
+    # Exclude linting for test files
+    - path: _test\.go
+      linters:
+        - errcheck

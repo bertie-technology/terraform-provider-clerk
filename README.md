@@ -179,6 +179,14 @@ Full provider documentation is available in the [docs/](docs/) directory:
 - [Provider Configuration](docs/index.md)
 - [clerk_organization Resource](docs/resources/organization.md)
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Releasing
+
+See [RELEASING.md](RELEASING.md) for information on how to release this provider to the Terraform Registry.
+
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE) for details.

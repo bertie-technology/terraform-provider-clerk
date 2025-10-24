@@ -41,3 +41,8 @@ terraform.tfvars
 
 # Documentation generation
 .terraform-plugin-docs/
+
+# Release artifacts
+dist/
+*.zip
+*.tar.gz
