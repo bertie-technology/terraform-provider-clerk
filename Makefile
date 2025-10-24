@@ -1,4 +1,4 @@
-.PHONY: build install test clean fmt
+.PHONY: build install test testacc clean fmt
 
 # Build the provider
 build:
@@ -10,9 +10,13 @@ install:
 	go mod download
 	go mod tidy
 
-# Run tests
+# Run unit tests
 test:
-	go test -v ./...
+	go test -v -count=1 -parallel=4 -timeout 5m ./...
+
+# Run acceptance tests
+testacc:
+	TF_ACC=1 go test -v -count=1 -parallel=4 -timeout 30m ./...
 
 # Format code
 fmt:

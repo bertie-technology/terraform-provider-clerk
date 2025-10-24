@@ -13,6 +13,12 @@ bin/
 
 # Output of the go coverage tool
 *.out
+coverage.out
+coverage.html
+
+# Test logs
+test.log
+test-debug.log
 
 # Dependency directories
 vendor/

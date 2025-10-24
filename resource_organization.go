@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 
@@ -14,6 +15,30 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+// normalizeJSON normalizes a JSON string to ensure consistent formatting
+func normalizeJSON(jsonStr string) (string, error) {
+	if jsonStr == "" {
+		return "", nil
+	}
+	var data interface{}
+	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.SetIndent("", "")
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(data); err != nil {
+		return "", err
+	}
+	// Remove trailing newline added by Encode
+	result := buf.String()
+	if len(result) > 0 && result[len(result)-1] == '\n' {
+		result = result[:len(result)-1]
+	}
+	return result, nil
+}
 
 // Ensure the implementation satisfies the expected interfaces
 var (
@@ -214,8 +239,12 @@ func (r *organizationResource) Create(ctx context.Context, req resource.CreateRe
 		plan.MaxAllowedMemberships = types.Int64Null()
 	}
 
-	// Always set a known value for public_metadata
-	if org.PublicMetadata != nil {
+	// For metadata, preserve the original plan values if they were set
+	// This avoids issues with JSON key ordering differences
+	if !plan.PublicMetadata.IsNull() && !plan.PublicMetadata.IsUnknown() {
+		// Keep the original value from plan - it contains the same data
+		// just potentially in a different key order
+	} else if org.PublicMetadata != nil {
 		metadata, err := json.Marshal(org.PublicMetadata)
 		if err != nil {
 			resp.Diagnostics.AddError(
@@ -229,8 +258,9 @@ func (r *organizationResource) Create(ctx context.Context, req resource.CreateRe
 		plan.PublicMetadata = types.StringNull()
 	}
 
-	// Always set a known value for private_metadata
-	if org.PrivateMetadata != nil {
+	if !plan.PrivateMetadata.IsNull() && !plan.PrivateMetadata.IsUnknown() {
+		// Keep the original value from plan
+	} else if org.PrivateMetadata != nil {
 		metadata, err := json.Marshal(org.PrivateMetadata)
 		if err != nil {
 			resp.Diagnostics.AddError(
@@ -279,7 +309,7 @@ func (r *organizationResource) Read(ctx context.Context, req resource.ReadReques
 		state.MaxAllowedMemberships = types.Int64Null()
 	}
 
-	// Always set a known value for public_metadata
+	// Handle public_metadata with normalization
 	if org.PublicMetadata != nil {
 		metadata, err := json.Marshal(org.PublicMetadata)
 		if err != nil {
@@ -289,12 +319,31 @@ func (r *organizationResource) Read(ctx context.Context, req resource.ReadReques
 			)
 			return
 		}
-		state.PublicMetadata = types.StringValue(string(metadata))
+		newValue, err := normalizeJSON(string(metadata))
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error normalizing public_metadata",
+				"Could not normalize public_metadata: "+err.Error(),
+			)
+			return
+		}
+
+		// If state has a value, normalize it and compare
+		if !state.PublicMetadata.IsNull() {
+			existingNormalized, err := normalizeJSON(state.PublicMetadata.ValueString())
+			if err == nil && existingNormalized == newValue {
+				// Keep existing formatting
+			} else {
+				state.PublicMetadata = types.StringValue(newValue)
+			}
+		} else {
+			state.PublicMetadata = types.StringValue(newValue)
+		}
 	} else {
 		state.PublicMetadata = types.StringNull()
 	}
 
-	// Always set a known value for private_metadata
+	// Handle private_metadata with normalization
 	if org.PrivateMetadata != nil {
 		metadata, err := json.Marshal(org.PrivateMetadata)
 		if err != nil {
@@ -304,7 +353,26 @@ func (r *organizationResource) Read(ctx context.Context, req resource.ReadReques
 			)
 			return
 		}
-		state.PrivateMetadata = types.StringValue(string(metadata))
+		newValue, err := normalizeJSON(string(metadata))
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error normalizing private_metadata",
+				"Could not normalize private_metadata: "+err.Error(),
+			)
+			return
+		}
+
+		// If state has a value, normalize it and compare
+		if !state.PrivateMetadata.IsNull() {
+			existingNormalized, err := normalizeJSON(state.PrivateMetadata.ValueString())
+			if err == nil && existingNormalized == newValue {
+				// Keep existing formatting
+			} else {
+				state.PrivateMetadata = types.StringValue(newValue)
+			}
+		} else {
+			state.PrivateMetadata = types.StringValue(newValue)
+		}
 	} else {
 		state.PrivateMetadata = types.StringNull()
 	}
@@ -394,8 +462,11 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 		plan.MaxAllowedMemberships = types.Int64Null()
 	}
 
-	// Always set a known value for public_metadata
-	if org.PublicMetadata != nil {
+	// For metadata, preserve the original plan values if they were set
+	// This avoids issues with JSON key ordering differences
+	if !plan.PublicMetadata.IsNull() && !plan.PublicMetadata.IsUnknown() {
+		// Keep the original value from plan
+	} else if org.PublicMetadata != nil {
 		metadata, err := json.Marshal(org.PublicMetadata)
 		if err != nil {
 			resp.Diagnostics.AddError(
@@ -409,8 +480,9 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 		plan.PublicMetadata = types.StringNull()
 	}
 
-	// Always set a known value for private_metadata
-	if org.PrivateMetadata != nil {
+	if !plan.PrivateMetadata.IsNull() && !plan.PrivateMetadata.IsUnknown() {
+		// Keep the original value from plan
+	} else if org.PrivateMetadata != nil {
 		metadata, err := json.Marshal(org.PrivateMetadata)
 		if err != nil {
 			resp.Diagnostics.AddError(

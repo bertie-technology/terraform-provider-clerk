@@ -120,14 +120,34 @@ All arguments are also available as attributes and can be referenced in outputs 
 ### Building
 
 ```bash
-go build -o terraform-provider-clerk
+make build
+# Or manually:
+go build -o bin/terraform-provider-clerk
 ```
 
 ### Testing
 
+#### Unit Tests
+
 ```bash
-go test ./...
+make test
 ```
+
+#### Acceptance Tests
+
+Acceptance tests create real resources in Clerk and require a valid API key.
+
+**⚠️ Warning:** Use a test/development Clerk account, not production!
+
+```bash
+# Set your test API key
+export CLERK_API_KEY="sk_test_your_test_api_key"
+
+# Run acceptance tests
+make testacc
+```
+
+See [TESTING.md](TESTING.md) for detailed testing documentation.
 
 ### Running with Debug Mode
 
