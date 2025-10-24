@@ -1,6 +1,6 @@
 module github.com/bertie-technology/terraform-provider-clerk
 
-go 1.25
+go 1.24.0
 
 require (
 	github.com/clerk/clerk-sdk-go/v2 v2.4.2

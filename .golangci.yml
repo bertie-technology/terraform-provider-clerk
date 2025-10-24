@@ -1,5 +1,6 @@
 run:
   timeout: 5m
+  go: "1.24"
 
 linters:
   enable:
@@ -8,10 +9,6 @@ linters:
     - ineffassign
     - staticcheck
     - unused
-
-linters-settings:
-  staticcheck:
-    go: "1.25"
 
 issues:
   exclude-rules:
