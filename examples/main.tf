@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     clerk = {
-      source = "bertie-technology/clerk"
+      source = "registry.terraform.io/bertie-technology/clerk"
     }
   }
 }
@@ -56,4 +56,3 @@ output "created_by" {
   value       = clerk_organization.example.created_by
   description = "User ID who created the organization"
 }
-

@@ -1,4 +1,4 @@
-.PHONY: build install test testacc clean fmt
+.PHONY: build install test testacc clean fmt docs
 
 # Build the provider
 build:
@@ -25,6 +25,16 @@ fmt:
 # Clean build artifacts
 clean:
 	rm -rf bin/
+
+# Generate documentation
+docs:
+	@echo "Generating documentation..."
+	@rm -rf examples/.terraform examples/.terraform.lock.hcl .terraform-plugin-docs
+	@$(shell go env GOPATH)/bin/tfplugindocs generate --provider-name clerk
+
+# Validate documentation
+docs-validate:
+	@$(shell go env GOPATH)/bin/tfplugindocs validate --provider-name clerk
 
 # Run with debug mode
 debug:

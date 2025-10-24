@@ -1,0 +1,55 @@
+---
+page_title: "Provider: Clerk"
+description: |-
+  The Clerk provider is used to manage Clerk resources using Terraform.
+---
+
+# Clerk Provider
+
+The Clerk provider allows you to manage [Clerk](https://clerk.com) resources using Terraform.
+
+Currently, this provider supports managing Clerk organizations. Additional resources may be added in future versions.
+
+## Example Usage
+
+```terraform
+terraform {
+  required_providers {
+    clerk = {
+      source = "registry.terraform.io/bertie-technology/clerk"
+    }
+  }
+}
+
+provider "clerk" {
+  # Configuration via CLERK_API_KEY environment variable is recommended
+  # api_key = "sk_test_your_api_key_here"
+}
+```
+
+## Authentication
+
+The provider requires a Clerk API key for authentication. You can obtain an API key from your Clerk dashboard.
+
+### Using Environment Variables (Recommended)
+
+```bash
+export CLERK_API_KEY="sk_test_your_api_key_here"
+terraform plan
+```
+
+### Using Provider Configuration
+
+While you can set the API key directly in your Terraform configuration, it's recommended to use environment variables to avoid exposing sensitive data.
+
+## Schema
+
+### Required
+
+- `api_key` (String, Sensitive) Clerk API Key. Can also be set via `CLERK_API_KEY` environment variable.
+
+## Resources
+
+- [clerk_organization](./resources/organization.md)
+
+

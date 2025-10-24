@@ -38,3 +38,6 @@ terraform.tfvars
 
 # OS files
 .DS_Store
+
+# Documentation generation
+.terraform-plugin-docs/

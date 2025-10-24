@@ -149,11 +149,35 @@ make testacc
 
 See [TESTING.md](TESTING.md) for detailed testing documentation.
 
+### Documentation
+
+Generate provider documentation:
+
+```bash
+make docs
+```
+
+This uses [terraform-plugin-docs](https://github.com/hashicorp/terraform-plugin-docs) to automatically generate documentation from:
+
+- Provider schema
+- Resource schemas
+- Example files in `examples/`
+- Templates in `templates/`
+
+Generated docs are placed in the `docs/` directory.
+
 ### Running with Debug Mode
 
 ```bash
 go run main.go -debug
 ```
+
+## Documentation
+
+Full provider documentation is available in the [docs/](docs/) directory:
+
+- [Provider Configuration](docs/index.md)
+- [clerk_organization Resource](docs/resources/organization.md)
 
 ## License
 
