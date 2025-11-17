@@ -3,7 +3,7 @@ module github.com/bertie-technology/terraform-provider-clerk
 go 1.24.0
 
 require (
-	github.com/clerk/clerk-sdk-go/v2 v2.4.2
+	github.com/clerk/clerk-sdk-go/v2 v2.5.0
 	github.com/hashicorp/terraform-plugin-framework v1.16.1
 	github.com/hashicorp/terraform-plugin-go v0.29.0
 	github.com/hashicorp/terraform-plugin-testing v1.13.3
