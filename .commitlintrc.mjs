@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   extends: ["@commitlint/config-conventional"],
   // Dependabot's auto-generated commit bodies (the "Bumps [...]" line and
   // changelog URLs) routinely exceed body-max-line-length, which is out of our
