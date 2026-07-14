@@ -1,6 +1,10 @@
-{
-  "extends": ["@commitlint/config-conventional"],
-  "rules": {
+module.exports = {
+  extends: ["@commitlint/config-conventional"],
+  // Dependabot's auto-generated commit bodies (the "Bumps [...]" line and
+  // changelog URLs) routinely exceed body-max-line-length, which is out of our
+  // control. Skip linting its commits rather than weakening the rules for humans.
+  ignores: [(message) => message.includes("dependabot[bot]")],
+  rules: {
     "type-enum": [
       2,
       "always",
@@ -15,8 +19,8 @@
         "build",
         "ci",
         "chore",
-        "revert"
-      ]
+        "revert",
+      ],
     ],
     "type-case": [2, "always", "lower-case"],
     "type-empty": [2, "never"],
@@ -27,6 +31,6 @@
     "body-leading-blank": [1, "always"],
     "body-max-line-length": [2, "always", 100],
     "footer-leading-blank": [1, "always"],
-    "footer-max-line-length": [2, "always", 100]
-  }
-}
+    "footer-max-line-length": [2, "always", 100],
+  },
+};
