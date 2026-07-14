@@ -404,6 +404,12 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 		params.MaxAllowedMemberships = clerk.Int64(plan.MaxAllowedMemberships.ValueInt64())
 	}
 
+	// Metadata is applied through the dedicated metadata endpoint
+	// (ReplaceMetadata) rather than the deprecated UpdateParams fields. Each
+	// provided field replaces the stored value, matching the previous behaviour.
+	metadataParams := &organization.ReplaceMetadataParams{}
+	hasMetadata := false
+
 	// Parse public metadata
 	if !plan.PublicMetadata.IsNull() && !plan.PublicMetadata.IsUnknown() {
 		var metadata json.RawMessage
@@ -414,7 +420,8 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 			)
 			return
 		}
-		params.PublicMetadata = &metadata
+		metadataParams.PublicMetadata = &metadata
+		hasMetadata = true
 	}
 
 	// Parse private metadata
@@ -427,10 +434,11 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 			)
 			return
 		}
-		params.PrivateMetadata = &metadata
+		metadataParams.PrivateMetadata = &metadata
+		hasMetadata = true
 	}
 
-	// Update the organization
+	// Update the organization's non-metadata fields
 	_, err := r.client.UpdateOrganization(ctx, plan.ID.ValueString(), params)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -438,6 +446,17 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 			"Could not update organization ID "+plan.ID.ValueString()+": "+err.Error(),
 		)
 		return
+	}
+
+	// Replace metadata via the dedicated endpoint when provided
+	if hasMetadata {
+		if _, err := r.client.ReplaceOrganizationMetadata(ctx, plan.ID.ValueString(), metadataParams); err != nil {
+			resp.Diagnostics.AddError(
+				"Error updating organization metadata",
+				"Could not update metadata for organization ID "+plan.ID.ValueString()+": "+err.Error(),
+			)
+			return
+		}
 	}
 
 	// Fetch the organization again to get the latest state from the API
