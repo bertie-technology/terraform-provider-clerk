@@ -40,6 +40,17 @@ func (c *ClerkClient) UpdateOrganization(ctx context.Context, id string, params 
 	return org, nil
 }
 
+// ReplaceOrganizationMetadata replaces an organization's public and private
+// metadata using the Clerk SDK's dedicated metadata endpoint. Each field
+// included in the request overwrites the stored value (rather than merging).
+func (c *ClerkClient) ReplaceOrganizationMetadata(ctx context.Context, id string, params *organization.ReplaceMetadataParams) (*clerk.Organization, error) {
+	org, err := organization.ReplaceMetadata(ctx, id, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to replace organization metadata: %w", err)
+	}
+	return org, nil
+}
+
 // DeleteOrganization deletes an organization using the Clerk SDK
 func (c *ClerkClient) DeleteOrganization(ctx context.Context, id string) error {
 	_, err := organization.Delete(ctx, id)
